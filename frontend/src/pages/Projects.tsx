@@ -126,7 +126,7 @@ const handleDelete = async (id: string) => {
              <TableHead className=' text-gray-50'>Created_By</TableHead>
               {/* <TableHead className=' text-gray-50'>Created_At</TableHead> */}
           
-          <TableHead className="text-right"><Button onClick={() => setOpen(true)}>Add</Button></TableHead>
+          <TableHead className="text-right"><Button className='text-red-900 bg-gray-200 font-bold shadow-xl' onClick={() => setOpen(true)}>ADD</Button></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -145,17 +145,17 @@ const handleDelete = async (id: string) => {
       <TableCell>{project.created_by}</TableCell>
       <TableCell className="text-right">
         <div className="flex gap-2 justify-end">
-          <Button
+          <Button className='text-red-900 bg-gray-200 font-bold shadow-xl'
             onClick={() => {
               setSelectedProject(project)
               setUpdateOpen(true)
             }}
           >
-            Update
+           UPDATE
           </Button>
 
-          <Button onClick={() => handleDelete(project.id)}>
-            Delete
+          <Button className='text-red-900 bg-gray-200 font-bold shadow-xl' onClick={() => handleDelete(project.id)}>
+            DELETE
           </Button>
         </div>
       </TableCell>
