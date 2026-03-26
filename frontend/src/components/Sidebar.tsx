@@ -1,4 +1,4 @@
-import { Home, User, Settings, LogOut, Menu, Tags } from "lucide-react"
+import { Home, User, Settings, LogOut, Menu, Tags, File,MessageCircle} from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
@@ -44,8 +44,11 @@ export default function Sidebar() {
                     <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} />
                     <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} />
                     <SidebarItem icon={<Tags size={18} />} label="Tasks" onClick={() =>navigate("/task")} />
-                      <SidebarItem icon={<Tags size={18} />} label="Projects" onClick={() =>navigate("/projects")} />
+                      <SidebarItem icon={<File size={18} />} label="Projects" onClick={() =>navigate("/projects")} />
+                      <SidebarItem icon={<MessageCircle size={18} />} label="Chats" onClick={() =>navigate("/messages")} />
+                           
                     <SidebarItem icon={<LogOut size={18} />} label="Logout" onClick={handleLogout}/>
+                    
                 </nav>
             </div>
 

@@ -29,6 +29,8 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
     })
     const [profiles, setProfiles] = useState<any[]>([])
     const [projects, setProjects] = useState<any[]>([])
+    const [user, setUser] = useState<any>(null)
+    const [file, setFile] = useState<File | null>(null)
 
     const handleChange = (e: any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -39,21 +41,69 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
             const { data: userData } = await supabase.auth.getUser()
             const user = userData.user
 
-            const { error } = await supabase.from("tasks").insert([
-                {
-                    task_code: formData.task_code,
-                    title: formData.title,
-                    description: formData.description,
-                    status: formData.status,
-                    priority: formData.priority,
-                    project_id: formData.project_id,
-                    user_id: user?.id,
-                    assigned_to: formData.assigned_to,
-                    due_date: formData.due_date
-                },
-            ])
+            if (!user) {
+                toast.error("User not found")
+                return
+            }
+
+
+
+            const { data, error } = await supabase
+                .from("tasks")
+                .insert([
+                    {
+                        task_code: formData.task_code,
+                        title: formData.title,
+                        description: formData.description,
+                        status: formData.status,
+                        priority: formData.priority,
+                        project_id: formData.project_id,
+                        user_id: user?.id,
+                        assigned_to: formData.assigned_to,
+                        due_date: formData.due_date,
+                    },
+                ])
+                .select()
+                .single()
 
             if (error) throw error
+
+
+            //upload
+            // check file
+            if (!file) {
+                toast.error("Please select a file")
+                return
+            }
+
+            //  use inserted task id
+            const filePath = `tasks/${data.id}/${Date.now()}-${file.name}`
+
+            // upload
+            const { error: uploadError } = await supabase.storage
+                .from("task_files")
+                .upload(filePath, file)
+
+            if (uploadError) throw uploadError
+
+            // get url
+            const { data: publicUrlData } = supabase.storage
+                .from("task_files")
+                .getPublicUrl(filePath)
+
+            const fileUrl = publicUrlData.publicUrl
+
+            // insert to DB
+            const { error: fileInsertError } = await supabase
+                .from("task_files")
+                .insert({
+                    task_id: data.id,
+                    file_url: fileUrl,
+                    file_name: file.name,
+                })
+
+            if (fileInsertError) throw fileInsertError
+            //upload end
 
             toast.success("Task added ")
 
@@ -79,8 +129,14 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
     }
     useEffect(() => {
         fetchProfiles()
-            fetchProjects()
+        fetchProjects()
+        getUser()
     }, [])
+
+    const getUser = async () => {
+        const { data } = await supabase.auth.getUser()
+        setUser(data.user)
+    }
 
     const fetchProfiles = async () => {
         try {
@@ -102,12 +158,12 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
             if (error) throw error
 
             setProjects(data)
-            console.log("Fetched Projects:", data) 
+            console.log("Fetched Projects:", data)
         } catch (err: any) {
             console.log(err.message)
         }
     }
-    
+
 
     return (
         <>
@@ -134,10 +190,8 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                                 className="p-2 rounded border border-gray-400 focus:outline-none text-gray-300 bg-red-900"
                             >
                                 <option value="">Select Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="hold">Hold</option>
-                                <option value="completed">Completed</option>
+                                <option value="to_do">To Do</option>
+
                             </select>
                             <Label className="text-sm">Priority *</Label>
                             <select
@@ -161,11 +215,13 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                             >
                                 <option value="">Select User</option>
 
-                                {profiles.map((profile) => (
-                                    <option key={profile.id} value={profile.id}>
-                                        {profile.name}
-                                    </option>
-                                ))}
+                                {profiles
+                                    .filter((profile) => profile.id !== user?.id)
+                                    .map((profile) => (
+                                        <option key={profile.id} value={profile.id}>
+                                            {profile.name}
+                                        </option>
+                                    ))}
                             </select>
                             <Label className="text-sm">Project Id</Label>
                             <select
@@ -184,6 +240,13 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                             </select>
                             <Label className="text-sm">Due Date</Label>
                             <input name="due_date" type="date" placeholder="Project Name" className="p-2 rounded border border-gray-400 focus:outline-none text-gray-300" onChange={handleChange} />
+
+                            <Label className="text-sm">Upload File</Label>
+                             <input
+  type="file"
+  className=' p-3 rounded text-white shadow-xl hover:bg-red-200 m-2'
+  onChange={(e) => setFile(e.target.files?.[0] || null)}
+/>
                             <div className="flex gap-2 mt-4">
                                 <Button onClick={handleAddTask} className="bg-white text-red-900">
                                     Save

@@ -9,6 +9,8 @@ import Signup from './pages/Signup.tsx'
 import { Toaster } from "react-hot-toast"
 import Task from './pages/Task.tsx'
 import Projects from './pages/Projects.tsx'
+import Profile from './pages/Profile.tsx'
+import Messages from './pages/Messages.tsx'
 
 createRoot(document.getElementById('root')!).render(
    <StrictMode>
@@ -22,6 +24,8 @@ createRoot(document.getElementById('root')!).render(
       <Route path='/' element={<App/>}></Route>
         <Route path='/task' element={<Task/>}></Route>
         <Route path='/projects' element={<ProtectedRoute><Projects/></ProtectedRoute>}></Route>
+        <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
+        <Route path='/messages' element={<ProtectedRoute><Messages/></ProtectedRoute>}></Route>
      
     </Routes>
     </BrowserRouter>
