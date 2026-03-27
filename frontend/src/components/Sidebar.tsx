@@ -27,7 +27,7 @@ export default function Sidebar() {
         <>
             {/* Mobile Top Bar */}
             <div className="md:hidden flex items-center justify-between p-4 bg-red-900 text-white">
-                <h1 className="text-lg font-semibold">My App</h1>
+                <h1 className="text-lg font-semibold">Team Collaboration System</h1>
                 <Menu onClick={() => setOpen(!open)} className="cursor-pointer" />
             </div>
 
@@ -36,7 +36,7 @@ export default function Sidebar() {
                 className={`fixed top-0 left-0 h-full w-64 bg-red-900 text-white transform ${open ? "translate-x-0" : "-translate-x-full"
                     } md:translate-x-0 transition-transform duration-300 z-50`}
             >
-               Team Collaboration System
+               <div className="m-2 p-2 bg-red-950 rounded-xl shadow-xl text-center">Team Collaboration System</div>
                 <nav className="flex flex-col gap-2 p-4">
                     <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} />
                     <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} />
