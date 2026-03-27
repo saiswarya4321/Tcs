@@ -16,7 +16,7 @@ export default function Sidebar() {
 
     console.log("Logged out")
     toast.success("Logout successfully")
-    navigate("/")
+    navigate("/login")
 
   } catch (err: any) {
     console.error("Logout error:", err.message)
@@ -36,10 +36,7 @@ export default function Sidebar() {
                 className={`fixed top-0 left-0 h-full w-64 bg-red-900 text-white transform ${open ? "translate-x-0" : "-translate-x-full"
                     } md:translate-x-0 transition-transform duration-300 z-50`}
             >
-                <div className="p-6 text-2xl font-bold border-b border-red-700">
-                    Dashboard
-                </div>
-
+               Team Collaboration System
                 <nav className="flex flex-col gap-2 p-4">
                     <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} />
                     <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} />

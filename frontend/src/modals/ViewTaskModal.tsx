@@ -44,16 +44,16 @@ export default function ViewTaskModal({ open, setOpen, task }: Props) {
           <DialogTitle className="text-white">Task Details</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-3 mt-4">
+        <div className="flex flex-col gap-3 mt-4 p-4">
 
-          <p><b>Task Code:</b> {task.task_code}</p>
+         
           <p><b>Title:</b> {task.title}</p>
           <p><b>Description:</b> {task.description}</p>
           <p><b>Status:</b> {task.status}</p>
           <p><b>Priority:</b> {task.priority}</p>
-          <p><b>Project:</b> {task.project_id}</p>
-          <p><b>Created By:</b> {task.user_id}</p>
-          <p><b>Assigned To:</b> {task.assigned_to}</p>
+          <p><b>Project:</b> {task.project_name}</p>
+          
+          <p><b>Assigned To:</b> {task.assigned_name}</p>
           <p><b>Due Date:</b> {task.due_date}</p>
 
           {/* 🔥 FILE SECTION */}

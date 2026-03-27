@@ -66,21 +66,21 @@ export default function UpdateProjectModal({
 
         <h2 className="text-xl font-bold mb-4">Update Project</h2>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 bg-red-900">
           <Label>Project Code</Label>
-          <input name="project_code" value={formData.project_code} onChange={handleChange} className="p-2 rounded text-black" />
+          <input name="project_code" value={formData.project_code} onChange={handleChange} className="p-2 rounded text-gray-300" />
 
           <Label>Name</Label>
-          <input name="name" value={formData.name} onChange={handleChange} className="p-2 rounded text-black" />
+          <input name="name" value={formData.name} onChange={handleChange} className="p-2 rounded text-gray-300" />
 
           <Label>Description</Label>
-          <input name="description" value={formData.description} onChange={handleChange} className="p-2 rounded text-black" />
+          <input name="description" value={formData.description} onChange={handleChange} className="p-2 rounded text-gray-300" />
 
           <Label>Start Date</Label>
-          <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} className="p-2 rounded text-black" />
+          <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} className="p-2 rounded text-gray-300" />
 
           <Label>End Date</Label>
-          <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} className="p-2 rounded text-black" />
+          <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} className="p-2 rounded text-gray-300" />
 
           <div className="flex gap-2 mt-4">
             <Button onClick={handleUpdateProject} className="bg-white text-red-900">

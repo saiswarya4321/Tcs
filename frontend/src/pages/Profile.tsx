@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/supabase-client"
 import { Button } from '@/components/ui/button'
 import UpdateProfileModal from '@/modals/UpadateProfileModal'
+import profileImg from "../../public/profile.jpg"
 
 export default function Profile() {
     const [user, setUser] = useState<any>(null)
@@ -52,24 +53,31 @@ export default function Profile() {
       
       <div className="min-h-screen text-gray-300 flex items-center justify-center">
 
-      <div className="bg-red-900 p-6 rounded-xl w-full max-w-md shadow-lg">
+      <div className="bg-red-900 p-6 rounded-xl w-full max-w-[500px] shadow-lg">
 
         <h2 className="text-xl font-bold text-white mb-4 text-center">
           User Profile
         </h2>
 
        
-        <div className="flex flex-col justify-center items-center gap-3">
+        <div className="flex flex-row justify-center items-center gap-3 max-w-md">
+          <div>
+ <img
+  src={
+    profile?.avatars_url && profile.avatars_url !== ""
+      ? profile.avatars_url
+      : profileImg
+  }
+  onError={(e) => {
+    (e.target as HTMLImageElement).src = profileImg
+  }}
+  alt="profile"  className="w-[300px] h-[250px] rounded-full border border-red-500"
+/>
+          </div>
 
 
-         <div className='p-6'><img
-                    src={profile?.avatars_url}
-                    alt="profile"
-                    className="w-[300px] h-[300px] rounded-full"
-                /></div>
-               
-
-          <p><b>Name:</b> {profile?.name || "N/A"}</p>
+          <div className='flex flex-col  p-2 ml-2'>
+  <p><b>Name:</b> {profile?.name || "N/A"}</p>
           <p><b>Email:</b> {user?.email}</p>
           <p><b>Phone:</b> {profile?.phone_number || "N/A"}</p>
           <p><b>Location:</b> {profile?.location || "Trivandrum"}</p>
@@ -80,14 +88,22 @@ export default function Profile() {
               ? new Date(profile.created_at).toLocaleString()
               : "N/A"}
           </p>
-
-        </div>
-<Button
+          <Button
   onClick={() => setOpen(true)}
   className="mt-4 bg-white text-red-900 w-full"
 >
   Edit Profile
 </Button>
+          </div>
+
+
+     
+               
+
+        
+
+        </div>
+
       </div>
     </div>
     <UpdateProfileModal

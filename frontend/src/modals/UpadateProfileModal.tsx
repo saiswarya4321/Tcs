@@ -3,6 +3,8 @@ import { supabase } from "@/supabase-client"
 import toast from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import profileImg from "../../public/profile.jpg"
+
 
 type Props = {
     open: boolean
@@ -106,10 +108,16 @@ export default function UpdateProfileModal({
                 <div className="flex flex-col gap-4">
                     
          <div className='p-6'><img
-                    src={formData?.avatars_url}
-                    alt="profile"
-                    className="w-[300px] h-[300px] rounded-full"
-                /></div>
+  src={
+    profile?.avatars_url && profile.avatars_url !== ""
+      ? profile.avatars_url
+      : profileImg
+  }
+  onError={(e) => {
+    (e.target as HTMLImageElement).src = profileImg
+  }}
+  alt="profile"  className="w-[300px] h-[300px] rounded-full"
+/></div>
                
 
 
@@ -123,10 +131,10 @@ export default function UpdateProfileModal({
 
                     <Label>Phone</Label>
                     <input
-                        name="phone"
+                        name="phone_number"
                         value={formData.phone_number}
                         onChange={handleChange}
-                        className="p-2 rounded border text-gray-300"
+                        className="p-2 rounded border text-gray-300" type="tel"
                     />
                     <Label>Location</Label>
                     <input

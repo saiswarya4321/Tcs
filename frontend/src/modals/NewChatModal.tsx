@@ -22,23 +22,18 @@ export default function NewChatModal({
 }: Props) {
   const [search, setSearch] = useState("")
 
-  if (!open) return null
+  if (!open || !currentUserId) return null // Safety: modal won't render until user is ready
 
   const filteredUsers = users.filter(
-    (u) =>
-      u.id !== currentUserId &&
-      u.name.toLowerCase().includes(search.toLowerCase())
-  )
+  (u) => u?.id !== currentUserId && u?.name?.toLowerCase().includes(search.toLowerCase())
+)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-
       <div className="bg-[#111b21] w-full max-w-md rounded-xl shadow-xl flex flex-col max-h-[85vh] text-white">
-
         {/* HEADER */}
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold">Start New Chat</h2>
-
           <button
             onClick={() => setOpen(false)}
             className="text-gray-400 hover:text-white text-xl"
@@ -60,11 +55,8 @@ export default function NewChatModal({
 
         {/* USER LIST */}
         <div className="flex-1 overflow-y-auto p-2">
-
           {filteredUsers.length === 0 && (
-            <p className="text-gray-400 text-center mt-4">
-              No users found
-            </p>
+            <p className="text-gray-400 text-center mt-4">No users found</p>
           )}
 
           {filteredUsers.map((u) => (
@@ -76,12 +68,9 @@ export default function NewChatModal({
               }}
               className="flex items-center gap-3 p-3 rounded cursor-pointer hover:bg-[#2a3942]"
             >
-              {/* Avatar */}
               <div className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center font-bold">
                 {u.name.charAt(0).toUpperCase()}
               </div>
-
-              {/* Name */}
               <div>
                 <p className="font-medium">{u.name}</p>
                 <p className="text-xs text-gray-400">Start chat</p>
@@ -99,7 +88,6 @@ export default function NewChatModal({
             Close
           </button>
         </div>
-
       </div>
     </div>
   )

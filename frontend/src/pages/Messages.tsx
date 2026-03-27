@@ -3,11 +3,7 @@ import { supabase } from "@/supabase-client"
 import { useEffect, useState } from "react"
 import NewChatModal from "@/modals/NewChatModal"
 
-type User = {
-  id: string
-  name: string
-}
-
+type User = { id: string; name: string }
 type Message = {
   id: string
   sender_id: string
@@ -17,75 +13,71 @@ type Message = {
 }
 
 export default function Messages() {
+  const [user, setUser] = useState<User | null>(null)
+  const [allUsers, setAllUsers] = useState<User[]>([])
+  const [chatUsers, setChatUsers] = useState<User[]>([])
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
-  const [user, setUser] = useState<any>(null)
   const [message, setMessage] = useState("")
   const [openModal, setOpenModal] = useState(false)
 
-  const [allUsers, setAllUsers] = useState<any[]>([])
-  const [chatUsers, setChatUsers] = useState<any[]>([])
+  const anon_key = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-  // get logged user + all users
+  // Get logged-in user
   useEffect(() => {
-    getUser()
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      if (data.user) setUser({ id: data.user.id, name: data.user.email || "User" })
+    }
+    fetchUser()
+  }, [])
+
+  // Fetch all users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data } = await supabase.from("profiles").select("*")
+      setAllUsers(data || [])
+    }
     fetchUsers()
   }, [])
 
-  const getUser = async () => {
-    const { data } = await supabase.auth.getUser()
-    setUser(data.user)
-  }
+  // Fetch chat users via RPC
+  useEffect(() => {
+  if (!user) return
 
-  const fetchUsers = async () => {
-    const { data } = await supabase.from("profiles").select("*")
-    setAllUsers(data || [])
-  }
-
-  // fetch chat users (history only)
   const fetchChatUsers = async () => {
-    if (!user) return
+    const { data } = await supabase.rpc("get_chat_users", { uid: user.id })
 
-    const { data, error } = await supabase.rpc("get_chat_users", {
-      uid: user.id,
-    })
-
-    if (error) {
-      console.log(error.message)
-    } else {
-      setChatUsers(data || []) //  safe
-    }
+    setChatUsers(
+      (data || []).map((u: any) => ({
+        id: u.id,
+        name: u.name || u.email || "User", // fallback if name missing
+      }))
+    )
   }
 
+  fetchChatUsers()
+}, [user])
+
+  // Fetch messages with selected user
   useEffect(() => {
-    if (user) fetchChatUsers()
-  }, [user])
-
-  // fetch messages
-  const fetchMessages = async () => {
-    if (!selectedUser || !user) return
-
-    const { data } = await supabase
-      .from("messages")
-      .select("*")
-      .or(
-        `and(sender_id.eq.${user.id},receiver_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},receiver_id.eq.${user.id})`
-      )
-      .order("created_at", { ascending: true })
-
-    setMessages(data || [])
-  }
-
-  useEffect(() => {
-    if (selectedUser && user) {
-      fetchMessages()
+    if (!user || !selectedUser) return
+    const fetchMessages = async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .or(
+          `and(sender_id.eq.${user.id},receiver_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},receiver_id.eq.${user.id})`
+        )
+        .order("created_at", { ascending: true })
+      setMessages(data || [])
     }
-  }, [selectedUser, user])
+    fetchMessages()
+  }, [user, selectedUser])
 
-  // realtime
+  // Realtime listener
   useEffect(() => {
     if (!user) return
-
     const channel = supabase
       .channel("chat")
       .on(
@@ -93,24 +85,18 @@ export default function Messages() {
         { event: "INSERT", schema: "public", table: "messages" },
         (payload: any) => {
           const msg: Message = payload.new
-
-          // update chat window
           if (
             selectedUser &&
-            ((msg.sender_id === user.id &&
-              msg.receiver_id === selectedUser.id) ||
-              (msg.sender_id === selectedUser.id &&
-                msg.receiver_id === user.id))
+            ((msg.sender_id === user.id && msg.receiver_id === selectedUser.id) ||
+              (msg.sender_id === selectedUser.id && msg.receiver_id === user.id))
           ) {
             setMessages((prev) => [...prev, msg])
           }
-
-          // update sidebar users
-          if (
-            msg.sender_id === user.id ||
-            msg.receiver_id === user.id
-          ) {
-            fetchChatUsers()
+          if (msg.sender_id === user.id || msg.receiver_id === user.id) {
+            // Refresh chat users
+            supabase.rpc("get_chat_users", { uid: user.id }).then(({ data }) => {
+              setChatUsers(data || [])
+            })
           }
         }
       )
@@ -119,14 +105,10 @@ export default function Messages() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [selectedUser, user])
+  }, [user, selectedUser])
 
-  const anon_key = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-  // ✅ send message
   const sendMessage = async () => {
     if (!message.trim() || !selectedUser || !user) return
-
     await fetch(
       "https://wtqtigbbtbfhohcqrels.supabase.co/functions/v1/hyper-task",
       {
@@ -142,33 +124,25 @@ export default function Messages() {
         }),
       }
     )
-
     setMessage("")
-    fetchMessages()
-    fetchChatUsers() // ✅ update sidebar
   }
 
   const formatTime = (timestamp: string) => {
-  const date = new Date(timestamp)
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-}
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
+
   return (
     <div className="flex">
       <Sidebar />
 
       <div className="h-screen flex bg-red-900 text-white w-full md:ml-64">
-
         {/* LEFT PANEL */}
         <div className="w-1/3 border-r border-red-700 bg-red-950 overflow-y-auto">
-          
           <div className="p-4 font-bold text-lg border-b border-gray-700 flex justify-between items-center">
             Chats
-
             <button
-              onClick={() => setOpenModal(true)}
+              onClick={() => user && setOpenModal(true)}
               className="bg-red-900 w-8 h-8 rounded-full flex items-center justify-center text-white text-lg"
             >
               +
@@ -191,39 +165,35 @@ export default function Messages() {
 
         {/* RIGHT PANEL */}
         <div className="flex-1 flex flex-col">
-
-          {!selectedUser && (
+          {!selectedUser ? (
             <div className="flex-1 flex items-center justify-center bg-red-950 text-gray-400">
               Select a user to view conversation
             </div>
-          )}
-
-          {selectedUser && (
+          ) : (
             <>
               <div className="p-4 border-b border-red-700 bg-red-950">
                 <p className="font-semibold">{selectedUser.name}</p>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-red-900 text-black">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${
-                      msg.sender_id === user?.id
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    <div className="bg-red-200 px-3 py-2 rounded">
-                      {msg.message}
-                      <p className="text-[10px] text-gray-600 text-right mt-1">
-      {formatTime(msg.created_at)}
-    </p>
-                    </div>
-                    
-                  </div>
-                ))}
-              </div>
+              {user && (
+  <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-red-900 text-black">
+    {messages.map((msg) => (
+      <div
+        key={msg.id}
+        className={`flex ${
+          msg.sender_id === user.id ? "justify-end" : "justify-start"
+        }`}
+      >
+        <div className="bg-red-200 px-3 py-2 rounded">
+          {msg.message}
+          <p className="text-[10px] text-gray-600 text-right mt-1">
+            {formatTime(msg.created_at)}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
               <div className="p-3 bg-red-950 flex gap-2 text-gray-300 ">
                 <input
@@ -231,7 +201,6 @@ export default function Messages() {
                   onChange={(e) => setMessage(e.target.value)}
                   className="flex-1 p-2 rounded border border-red-500 focus:outline-none"
                 />
-
                 <button onClick={sendMessage}>Send</button>
               </div>
             </>
@@ -239,11 +208,12 @@ export default function Messages() {
         </div>
       </div>
 
+      {/* NEW CHAT MODAL */}
       <NewChatModal
-        open={openModal}
+        open={openModal && !!user} // only open if user exists
         setOpen={setOpenModal}
         users={allUsers}
-        currentUserId={user?.id}
+        currentUserId={user?.id || ""}
         onSelectUser={(u) => setSelectedUser(u)}
       />
     </div>

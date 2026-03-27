@@ -51,11 +51,10 @@ if (!user) {
 
     const { error: insertError } = await supabase.from("profiles").insert([{
         employee_id:userId,
-  name:name,
+ 
   email,
   id: user.id,
-  phone_number:phone_number,
-  location:location
+ 
   
 }])
 
@@ -83,7 +82,7 @@ if (insertError) throw insertError
           Enter your email below to signup to your account
         </CardDescription>
         <CardAction>
-          <Button variant="link" className='text-white'>Login</Button>
+          <Button variant="link" className='text-white'  onClick={()=>navigate("/login")}>Login</Button>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -103,7 +102,7 @@ if (insertError) throw insertError
                 required onChange={(e)=>setuserId(e.target.value)}
               />
             </div>
-             <div className="grid gap-2">
+             {/* <div className="grid gap-2">
               <Label htmlFor="name" className='text-white'>Name</Label>
               <Input
                 id="name"
@@ -111,7 +110,7 @@ if (insertError) throw insertError
                 placeholder="examplename"
                 required onChange={(e)=>setName(e.target.value)}
               />
-            </div>
+            </div> */}
             <div className="grid gap-2">
               <Label htmlFor="email" className='text-white'>Email</Label>
               <Input
@@ -126,9 +125,9 @@ if (insertError) throw insertError
                 <Label htmlFor="password" className='text-white'>Password</Label>
                 
               </div>
-              <Input id="password" type="password" required className='text-white' onChange={(e)=>setPassword(e.target.value)} />
+              <Input id="password" type="password" required className='text-white' onChange={(e)=>setPassword(e.target.value)} placeholder='user1234'/>
             </div>
-            <div className="grid gap-2">
+            {/* <div className="grid gap-2">
               <Label htmlFor="employee_id" className='text-white'>Phone Number</Label>
               <Input
                 id="phone_number"
@@ -136,8 +135,8 @@ if (insertError) throw insertError
                 placeholder="98999999999"
                 required onChange={(e)=>setPhone_Number(e.target.value)}
               />
-            </div>
-            <div className="grid gap-2">
+            </div> */}
+            {/* <div className="grid gap-2">
               <Label htmlFor="location" className='text-white'>Location</Label>
               <Input
                 id="location"
@@ -146,7 +145,7 @@ if (insertError) throw insertError
                 required onChange={(e)=>setLocation(e.target.value)}
               />
             </div>
-          
+           */}
              
             
           </div>

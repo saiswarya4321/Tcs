@@ -11,6 +11,7 @@ import Task from './pages/Task.tsx'
 import Projects from './pages/Projects.tsx'
 import Profile from './pages/Profile.tsx'
 import Messages from './pages/Messages.tsx'
+import Login from './pages/Login.tsx'
 
 createRoot(document.getElementById('root')!).render(
    <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/projects' element={<ProtectedRoute><Projects/></ProtectedRoute>}></Route>
         <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
         <Route path='/messages' element={<ProtectedRoute><Messages/></ProtectedRoute>}></Route>
+        <Route path='/login' element={<Login/>}></Route>
      
     </Routes>
     </BrowserRouter>

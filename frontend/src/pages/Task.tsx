@@ -22,14 +22,19 @@ type Tasks = {
   status: string
   priority: string
   project_id: string
-  project_name: string
+   project_name: string
   user_id: string
   assigned_to: string
+  assigned_name: string
   due_date: string
   created_at: string
 
 }
-
+type TaskType = {
+  project_id: string
+  project_name: string
+  // other fields if needed
+}
 import UpdateTaskModal from '@/modals/UpdateTaskModal'
 import AddTaskModal from '@/modals/AddTaskModal'
 import ViewTaskModal from '@/modals/ViewTaskModal'
@@ -50,86 +55,50 @@ export default function Task() {
   const [viewOpen, setViewOpen] = useState(false)
 const [selectedTask, setSelectedTask] = useState(null)
 
-  useEffect(() => {
-    fetchTasks()
-  }, [])
+ useEffect(() => {
+  fetchTasks()
+}, [search, filterType, statusFilter, projectFilter])
 
-  const fetchTasks = async () => {
-    try {
-      setLoading(true)
+const fetchTasks = async () => {
+  try {
+    setLoading(true);
 
-      const { error: userError, data: userData } = await supabase.auth.getUser()
-      if (userError) throw userError
-      console.log("userData", userData)
-      const user = userData.user
-      setUser(userData.user)
-      // const { data, error } = await supabase
-      //   .from('tasks')
-      //   .select('*')
-      // // .eq("user_id",userData.user.id)
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    if (userError) throw userError
 
-      const { error, data } = await supabase.rpc("get_user_tasks", { uid: user.id })
+    const user = userData.user
+    if (!user?.id) return
+    setUser(user)
+
+    const { data: tasksData, error } = await supabase.rpc("get_user_tasks", {
+      uid: user.id,
+      search: search || null,
+      filter_type: filterType === "all" ? null : filterType,
+      status_filter: statusFilter || null,
+      project_filter: projectFilter || null
+    })
+    if (error) throw error
+
+    setTasks(tasksData || [])
+
+    // Fill dropdown based on table tasks
+  const projectsDropdown = Array.from(
+  new Map(
+    (tasksData as TaskType[] || []).map(t => [t.project_id, { id: t.project_id, name: t.project_name }])
+  ).values()
+)
 
 
-      if (error) {
-        throw error
-      }
 
-      setTasks(data)
-      console.log("Data:", data)
+setProjects(projectsDropdown)
 
-    } catch (err: any) {
-      console.log("Error on fetching tasks:", err.message)
-      if (err.message.includes("permission")) {
-        toast.error("Not allowed (RLS policy)")
-      } else {
-        toast.error("Error on Listing")
-      }
-    }
-    finally {
-      setLoading(false)
-    }
+  } catch (err: any) {
+    console.log("Error fetching tasks:", err.message)
+    toast.error("Failed to fetch tasks")
+  } finally {
+    setLoading(false)
   }
-
-
-  const filteredTasks = tasks.filter((task) => {
-    let match = true
-
-    const query = search.toLowerCase()
-
-
-    if (search) {
-      const title = task.title?.toLowerCase() || ""
-      const code = task.task_code?.toLowerCase() || ""
-
-      match = match && (title.includes(query) || code.includes(query))
-    }
-
-
-    if (filterType === "assigned") {
-      match = match && task.assigned_to === user.id
-    }
-
-    if (filterType === "created") {
-      match = match && task.user_id === user.id
-    }
-
-
-    if (statusFilter) {
-      match = match && task.status === statusFilter
-    }
-
-
-    if (projectFilter) {
-      match = match && task.project_id === projectFilter
-    }
-
-    return match
-
-
-  })
-
-
+}
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
@@ -169,7 +138,7 @@ const [selectedTask, setSelectedTask] = useState(null)
       toast.error(err.message)
     }
   }
-
+{loading && <p className='text-gray-300 md:ml-74'>Loading....</p>}
   return (
     <div className='min-h-screen'>
       <Sidebar />
@@ -200,32 +169,34 @@ const [selectedTask, setSelectedTask] = useState(null)
 
 
             <select
-              onChange={(e) => setProjectFilter(e.target.value)}
-              className="text-red-900 bg-gray-300 rounded-xl p-2 w-full"
-            >
-              <option value="">All Projects</option>
-
-              {tasks.map((task) => (
-                <option key={task.project_id} value={task.project_id}>
-                  {task.project_id}
-                </option>
-              ))}
-            </select>
+  onChange={(e) => setProjectFilter(e.target.value)}
+  className="text-red-900 bg-gray-300 rounded-xl p-2 w-full"
+>
+  <option value="">All Projects</option>
+  {projects.map((proj) => (
+    <option key={proj.id} value={proj.id}>
+      {proj.name}
+    </option>
+  ))}
+</select>
           </div>
 
         </div>
         <Table className='bg-red-900 text-gray-100 rounded-xl'>
           <TableCaption>A list of your tasks.</TableCaption>
 
-          {loading && <p className='text-gray-300 md:ml-74'>Loading....</p>}
+          
 
           <TableHeader className=' text-gray-50'>
             <TableRow>
-              <TableHead className="w-[100px] text-gray-50">Task Id</TableHead>
+              
               <TableHead className=' text-gray-50'>Task Code</TableHead>
               <TableHead className=' text-gray-50'>Title</TableHead>
               <TableHead className=' text-gray-50'>Assigned To</TableHead>
               <TableHead className=' text-gray-50'>Status</TableHead>
+              <TableHead className=' text-gray-50'>Priority</TableHead>
+              <TableHead className=' text-gray-50'>Due Date</TableHead>
+
 
               <TableHead className="text-right">
                 {user && (
@@ -241,24 +212,26 @@ const [selectedTask, setSelectedTask] = useState(null)
           </TableHeader>
 
           <TableBody>
-            {filteredTasks.length === 0 ? (
+            {tasks.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-white py-4">
                   No Tasks found
                 </TableCell>
               </TableRow>
             ) : (
-              filteredTasks.map((task) => {
+              tasks.map((task) => {
 
                 const isCreator = task.user_id === user?.id
                 const isAssigned = task.assigned_to === user?.id
 
                 return (
                   <TableRow key={task.id}>
-                    <TableCell className="font-medium">{task.id}</TableCell>
+                    
                     <TableCell>{task.task_code}</TableCell>
                     <TableCell>{task.title}</TableCell>
-                    <TableCell>{task.assigned_to}</TableCell>
+                    <TableCell>{task.assigned_name}</TableCell>
+                    
+                    
                     <TableCell>
                       {isAssigned ? (
 
@@ -276,7 +249,8 @@ const [selectedTask, setSelectedTask] = useState(null)
                         <span className="capitalize">{task.status}</span>
                       )}
                     </TableCell>
-
+<TableCell>{task.priority}</TableCell>
+                    <TableCell>{task.due_date}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
 
