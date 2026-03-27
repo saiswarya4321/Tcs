@@ -71,24 +71,48 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                 return
             }
 
-            //  use inserted task id
+            const maxSize = 2 * 1024 * 1024
+
+  if (file.size > maxSize) {
+    alert("File size should be less than 2MB")
+    return
+  }
+
+  
+  const allowedTypes = [
+    "image/png",
+    "image/jpeg",
+    "application/pdf",
+    "application/msword", // .doc
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+  ]
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Only PNG, JPG, PDF, Word files are allowed")
+    return
+  }
+
+ 
+  console.log("Valid file:", file)
+
+           
             const filePath = `tasks/${data.id}/${Date.now()}-${file.name}`
 
-            // upload
+           
             const { error: uploadError } = await supabase.storage
                 .from("task_files")
                 .upload(filePath, file)
 
             if (uploadError) throw uploadError
 
-            // get url
+           
             const { data: publicUrlData } = supabase.storage
                 .from("task_files")
                 .getPublicUrl(filePath)
 
             const fileUrl = publicUrlData.publicUrl
 
-            // insert to DB
+           
             const { error: fileInsertError } = await supabase
                 .from("task_files")
                 .insert({
@@ -98,14 +122,13 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                 })
 
             if (fileInsertError) throw fileInsertError
-            //upload end
-
+          
             toast.success("Task added ")
 
             setOpen(false)
             refresh()
 
-            // reset form
+            
             setFormData({
                 task_code: "",
                 title: "",
