@@ -50,6 +50,12 @@ export default function UpdateProfileModal({
 
 
             if (avatar) {
+                const allowedTypes = ["image/png", "image/jpeg"]
+
+  if (!allowedTypes.includes(avatar.type)) {
+    toast.error("Only PNG and JPEG images are allowed")
+    return
+  }
                 const filePath = `avatars/${profile.id}/${avatar.name}`
 
                 const { error: uploadError } = await supabase.storage

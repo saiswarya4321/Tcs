@@ -65,6 +65,7 @@ const fetchProjects = async () => {
       }
 
       setProjects(data)
+      setLoading(false)
       console.log("Data:", data)
 
     } catch (err: any) {
@@ -107,6 +108,7 @@ const handleDelete = async (id: string) => {
     <div className='min-h-screen'>
         <Sidebar/>
         <div className='md:ml-74 flex flex-col  md:mt-10 mr-10'>
+          <p className='text-gray-300 bg-red-900 p-4 mb-2 shadow-xl rounded text-center'>PROJECTS</p>
             <input
   type="text"
   placeholder="Search by name or code..."
@@ -124,25 +126,36 @@ const handleDelete = async (id: string) => {
           <TableHead className=' text-gray-50'>Name</TableHead>
            
              <TableHead className=' text-gray-50'>Created_By</TableHead>
-              {/* <TableHead className=' text-gray-50'>Created_At</TableHead> */}
+              <TableHead className=' text-gray-50'>Start Date</TableHead>
+              <TableHead className=' text-gray-50'>End Date</TableHead>
           
           <TableHead className="text-right"><Button className='text-red-900 bg-gray-200 font-bold shadow-xl' onClick={() => setOpen(true)}>ADD</Button></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-      {projects.length === 0 ? (
+      {loading ? (
+  
   <TableRow>
     <TableCell colSpan={5} className="text-center text-white py-4">
-      No projects found 
+      Loading...
     </TableCell>
   </TableRow>
-) : (
+) : projects.length === 0 ? (
+  
+  <TableRow>
+    <TableCell colSpan={5} className="text-center text-white py-4">
+      No Tasks Found
+    </TableCell>
+  </TableRow>
+)  : (
   projects.map((project) => (
     <TableRow key={project.id}>
       {/* <TableCell className="font-medium">{project.id}</TableCell> */}
       <TableCell>{project.project_code}</TableCell>
       <TableCell>{project.name}</TableCell>
       <TableCell>{project.creator_name}</TableCell>
+      <TableCell>{project.start_date}</TableCell>
+      <TableCell>{project.end_date}</TableCell>
       <TableCell className="text-right">
         <div className="flex gap-2 justify-end">
           <Button className='text-red-900 bg-gray-200 font-bold shadow-xl'
@@ -159,6 +172,7 @@ const handleDelete = async (id: string) => {
           </Button>
         </div>
       </TableCell>
+      
     </TableRow>
   ))
 )}

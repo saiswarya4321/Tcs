@@ -80,7 +80,7 @@ if (insertError) throw insertError
           Enter your email below to signup to your account
         </CardDescription>
         <CardAction>
-          <Button variant="link" className='text-white'  onClick={()=>navigate("/login")}>Login</Button>
+          <Button variant="link" className='text-white'  onClick={()=>navigate("/")}>Login</Button>
         </CardAction>
       </CardHeader>
       <CardContent>

@@ -16,7 +16,7 @@ export default function Sidebar() {
 
     console.log("Logged out")
     toast.success("Logout successfully")
-    navigate("/login")
+    navigate("/")
 
   } catch (err: any) {
     console.error("Logout error:", err.message)

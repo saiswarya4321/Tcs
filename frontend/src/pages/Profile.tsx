@@ -48,19 +48,19 @@ export default function Profile() {
     return <p className="text-center mt-10 text-gray-300">Loading...</p>
   }
   return (
-    <div className=''>
+    <div className='bg-red-950'>
         <Sidebar/>
       
       <div className="min-h-screen text-gray-300 flex items-center justify-center">
 
-      <div className="bg-red-900 p-6 rounded-xl w-full max-w-[500px] shadow-lg">
+      <div className="bg-red-900 p-6 rounded-xl w-full max-w-[700px] shadow-lg">
 
         <h2 className="text-xl font-bold text-white mb-4 text-center">
-          User Profile
+          Your Profile
         </h2>
 
        
-        <div className="flex flex-row justify-center items-center gap-3 max-w-md">
+        <div className="flex flex-row justify-center items-center   ">
           <div>
  <img
   src={
@@ -71,12 +71,12 @@ export default function Profile() {
   onError={(e) => {
     (e.target as HTMLImageElement).src = profileImg
   }}
-  alt="profile"  className="w-[300px] h-[250px] rounded-full border border-red-500"
+  alt="profile"  className="w-[200px] h-[200px] rounded-full border border-red-500"
 />
           </div>
 
 
-          <div className='flex flex-col  p-2 ml-2'>
+          <div className='flex flex-col  p-5 ml-10  gap-2'>
   <p><b>Name:</b> {profile?.name || "N/A"}</p>
           <p><b>Email:</b> {user?.email}</p>
           <p><b>Phone:</b> {profile?.phone_number || "N/A"}</p>

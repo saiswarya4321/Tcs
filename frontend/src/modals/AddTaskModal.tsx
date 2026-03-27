@@ -133,7 +133,7 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                 task_code: "",
                 title: "",
                 description: "",
-                status: "",
+                status: "to_do",
                 priority: "",
                 project_id: "",
                 assigned_to: "",
@@ -201,16 +201,12 @@ export default function AddTaskModal({ open, setOpen, refresh }: Props) {
                             <Label className="text-sm">Description *</Label>
                             <input name="description" placeholder="Description" className="p-2 rounded border border-gray-400 focus:outline-none text-gray-300" onChange={handleChange} />
                             <Label className="text-sm">Status *</Label>
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="p-2 rounded border border-gray-400 focus:outline-none text-gray-300 bg-red-900"
-                            >
-                                <option value="">Select Status</option>
-                                <option value="to_do">To Do</option>
-
-                            </select>
+                            <input
+  type="text"
+  value="To Do"
+  disabled
+  className="p-2 rounded border border-gray-400 text-gray-300 bg-red-900"
+/>
                             <Label className="text-sm">Priority *</Label>
                             <select
                                 name="priority"
