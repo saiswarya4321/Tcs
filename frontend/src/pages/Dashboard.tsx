@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import { supabase } from '@/supabase-client'
-import Profile from './Profile'
+
 
 function Dashboard() {
 

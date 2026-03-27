@@ -23,7 +23,7 @@ function Login() {
         const [email,setEmail]=useState('')
         const [password,setPassword]=useState('')
         const [loading, setLoading] = useState(false)
-        const [showPassword, setShowPassword] = useState(false)
+      
         const handleLogin= async()=>{
             try {
                 setLoading(true)
@@ -47,7 +47,7 @@ function Login() {
            }
         }
     
-
+{loading&& <p>Loading.......</p>}
   return (
     <>
      <div className=' min-h-screen flex flex-col items-center justify-center text-blue-600'> 

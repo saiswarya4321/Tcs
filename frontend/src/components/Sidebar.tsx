@@ -1,6 +1,6 @@
-import { Home, User, Settings, LogOut, Menu, Tags, File,MessageCircle} from "lucide-react"
+import { Home, User,  LogOut, Menu, Tags, File,MessageCircle} from "lucide-react"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/supabase-client"
 import toast from "react-hot-toast"

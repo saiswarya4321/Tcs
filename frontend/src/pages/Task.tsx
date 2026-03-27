@@ -1,11 +1,11 @@
 import Sidebar from '@/components/Sidebar'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
+  
   TableHead,
   TableHeader,
   TableRow,
@@ -53,7 +53,7 @@ export default function Task() {
   const [user, setUser] = useState<any>(null)
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([])
   const [viewOpen, setViewOpen] = useState(false)
-const [selectedTask, setSelectedTask] = useState(null)
+
 
  useEffect(() => {
   fetchTasks()

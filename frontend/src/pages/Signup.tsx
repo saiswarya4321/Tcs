@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   Card,
   CardAction,
@@ -20,11 +20,9 @@ export default function Signup() {
     const [email,setEmail]=useState('')
     const [password,setPassword]=useState('')
     const [loading, setLoading] = useState(false)
-     const [showPassword, setShowPassword] = useState(false)
-     const [name,setName]=useState('')
+     
      const[userId,setuserId]=useState('')
-     const[phone_number,setPhone_Number]=useState('')
-     const[location,setLocation]=useState('')
+    
      
     
     const handleSignup = async () => {
