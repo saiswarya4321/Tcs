@@ -102,25 +102,33 @@ export default function Task() {
   }
 
   const handleStatusChange = async (id: string, status: string) => {
-    try {
-      const { error } = await supabase
-        .from("tasks")
-        .update({ status })
-        .eq("id", id)
-
-      if (error) throw error
-
-      toast.success("Status updated")
-
-
-      setTasks(prev =>
-        prev.map(t => t.id === id ? { ...t, status } : t)
-      )
-
-    } catch (err: any) {
-      toast.error(err.message)
-    }
+  if (!status || status.trim() === "") {
+    console.log("Empty status blocked")
+    return
   }
+
+  try {
+    console.log("Updating:", id, status)
+
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({ status })
+      .eq("id", id)
+      .eq("assigned_to", user.id)
+      .select()
+
+      console.log("Updated row:", data)
+    if (error) throw error
+
+    console.log("Updated row:", data)
+
+    toast.success("Status updated")
+    await fetchTasks()
+
+  } catch (err: any) {
+    toast.error(err.message)
+  }
+}
 
   const handleDelete = async (id: string) => {
     try {
@@ -170,7 +178,8 @@ export default function Task() {
 
             <select onChange={(e) => setStatusFilter(e.target.value)} className='text-red-900 bg-gray-300 mr-1 rounded-xl shadow-xl p-1 w-full'>
               <option value="">All Status</option>
-              <option value="pending">Pending</option>
+              <option value="to_do">To do</option>
+              <option value="in_progress">In_Progess</option>
               <option value="completed">Completed</option>
             </select>
 
@@ -255,7 +264,7 @@ export default function Task() {
                           onChange={(e) => handleStatusChange(task.id, e.target.value)}
                           className="text-red-900 bg-gray-300 p-1 rounded"
                         >
-                          <option value="pending">Pending</option>
+                          <option value="to_do">To Do</option>
                           <option value="in_progress">In Progress</option>
                           <option value="completed">Completed</option>
                         </select>
