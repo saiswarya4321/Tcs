@@ -42,7 +42,7 @@ getUser()
       <div className='ml-64 min-h-screen flex flex-col justify-center items-center bg-red-950'>
         <div className='bg-red-900 p-10 text-white font-bold  max-w-md rounded shadow'>
           <p>
-            Welcome {profile?.name || user?.email || "User"}
+            Welcome {profile?.name || "User"}
           </p>
 
         </div>

@@ -50,7 +50,7 @@ function Login() {
 {loading&& <p>Loading.......</p>}
   return (
     <>
-     <div className=' min-h-screen flex flex-col items-center justify-center text-blue-600'> 
+     <div className=' min-h-screen flex flex-col items-center justify-center text-blue-600 bg-red-950'> 
      
       <Card className="w-full max-w-sm bg-red-900 ">
       <CardHeader>
@@ -79,7 +79,7 @@ function Login() {
                 <Label htmlFor="password" className='text-white'>Password</Label>
                 
               </div>
-              <Input id="password" type="password" required className='text-white' onChange={(e)=>setPassword(e.target.value)} />
+              <Input id="password" type="password" required className='text-white' onChange={(e)=>setPassword(e.target.value)} placeholder="user@1234"/>
             </div>
           </div>
         </div>

@@ -53,9 +53,9 @@ export default function Profile() {
       
       <div className="min-h-screen text-gray-300 flex items-center justify-center">
 
-      <div className="bg-red-900 p-6 rounded-xl w-full max-w-[700px] shadow-lg">
+      <div className="bg-red-900 p-6 rounded-xl w-full md:max-w-[700px] shadow-lg">
 
-        <h2 className="text-xl font-bold text-white mb-4 text-center">
+        <h2 className="text-xl font-bold text-gray-300 mb-4 text-center bg-red-950 rounded-xl shadow-xl p-2">
           Your Profile
         </h2>
 
@@ -76,21 +76,21 @@ export default function Profile() {
           </div>
 
 
-          <div className='flex flex-col  p-5 ml-10  gap-2'>
-  <p><b>Name:</b> {profile?.name || "N/A"}</p>
-          <p><b>Email:</b> {user?.email}</p>
-          <p><b>Phone:</b> {profile?.phone_number || "N/A"}</p>
-          <p><b>Location:</b> {profile?.location || "Trivandrum"}</p>
+          <div className='flex flex-col  p-5 ml-10  gap-2 bg-red-800 rounded-xl shadow-xl'>
+  <p className='bg-red-950 p-2 text-center text-gray-300 rounded-xl shadow-xl'><b className='mr-1 text-gray-400'>Name:</b> {profile?.name || "N/A"}</p>
+          <p className='bg-red-950 p-2 text-center text-gray-300 rounded-xl shadow-xl'><b className='mr-1 text-gray-400'>Email:</b> {user?.email}</p>
+          <p className='bg-red-950 p-2 text-center text-gray-300 rounded-xl shadow-xl'><b className='mr-1 text-gray-400'>Phone:</b> {profile?.phone_number || "N/A"}</p>
+          <p className='bg-red-950 p-2 text-center text-gray-300 rounded-xl shadow-xl'><b className='mr-1 text-gray-400'>Location:</b> {profile?.location || "Trivandrum"}</p>
 
-          <p>
-            <b>Created At:</b>{" "}
+          <p className='bg-red-950 p-2 text-center text-gray-300 rounded-xl shadow-xl'>
+            <b className='mr-1 text-gray-400'>Created At:</b>{" "}
             {profile?.created_at
               ? new Date(profile.created_at).toLocaleString()
               : "N/A"}
           </p>
           <Button
   onClick={() => setOpen(true)}
-  className="mt-4 bg-white text-red-900 w-full"
+  className="mt-4 bg-gray-300 text-red-900 w-full"
 >
   Edit Profile
 </Button>

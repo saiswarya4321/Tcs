@@ -105,9 +105,9 @@ const handleDelete = async (id: string) => {
 
 {loading && <p className='text-gray-300 md:ml-74'>Loading....</p>}
   return (
-    <div className='min-h-screen'>
+    <div className='min-h-screen bg-red-200'>
         <Sidebar/>
-        <div className='md:ml-74 flex flex-col  md:mt-10 mr-10'>
+        <div className='md:ml-74 flex flex-col  md:pt-10 md:mr-10'>
           <p className='text-gray-300 bg-red-900 p-4 mb-2 shadow-xl rounded text-center'>PROJECTS</p>
             <input
   type="text"

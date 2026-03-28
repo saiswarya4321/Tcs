@@ -1,13 +1,17 @@
-import { Home, User,  LogOut, Menu, Tags, File,MessageCircle} from "lucide-react"
+import { Home, User,  LogOut, Menu, Tags,MessageCircle,FileAxis3D} from "lucide-react"
 import { useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/supabase-client"
 import toast from "react-hot-toast"
+import { useLocation } from "react-router-dom"
+
+
 
 export default function Sidebar() {
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
+    const location = useLocation()
      const handleLogout = async () => {
   try {
     const { error } = await supabase.auth.signOut()
@@ -37,12 +41,12 @@ export default function Sidebar() {
                     } md:translate-x-0 transition-transform duration-300 z-50`}
             >
                <div className="m-2 p-2 bg-red-950 rounded-xl shadow-xl text-center">Team Collaboration System</div>
-                <nav className="flex flex-col gap-2 p-4">
-                    <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} />
-                    <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} />
-                    <SidebarItem icon={<Tags size={18} />} label="Tasks" onClick={() =>navigate("/task")} />
-                      <SidebarItem icon={<File size={18} />} label="Projects" onClick={() =>navigate("/projects")} />
-                      <SidebarItem icon={<MessageCircle size={18} />} label="Chats" onClick={() =>navigate("/messages")} />
+                <nav className="flex flex-col gap-2 p-4 md:gap-4">
+                    <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} active={location.pathname === "/dashboard"} />
+                    <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} active={location.pathname === "/profile"}/>
+                    <SidebarItem icon={<Tags size={18} />} label="Tasks" onClick={() =>navigate("/task")} active={location.pathname === "/task"}/>
+                      <SidebarItem icon={<FileAxis3D size={18} />} label="Projects" onClick={() =>navigate("/projects")} active={location.pathname === "/projects"}/>
+                      <SidebarItem icon={<MessageCircle size={18} />} label="Chats" onClick={() =>navigate("/messages")} active={location.pathname === "/messages"}/>
                            
                     <SidebarItem icon={<LogOut size={18} />} label="Logout" onClick={handleLogout}/>
                     
@@ -60,11 +64,12 @@ export default function Sidebar() {
     )
 }
 
-function SidebarItem({ icon, label,onClick }: any) {
+function SidebarItem({ icon, label,onClick ,active}: any) {
     return (
       <div
       onClick={onClick}
-      className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-800 cursor-pointer transition"
+     className={`flex items-center gap-2 p-2 md:p-4 rounded-full cursor-pointer  bg-red-800
+        ${active ? "bg-red-950 text-white rounded-xl shadow-xl" : "hover:bg-red-950 rounded-xl shadow-xl"}`}
     >
       {icon}
       <span className="text-sm font-medium">{label}</span>

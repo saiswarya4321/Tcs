@@ -154,7 +154,7 @@ export default function UpdateProfileModal({
                     <input
                         type="file"
                         onChange={(e) => setAvatar(e.target.files?.[0] || null)}
-                        className="p-2"
+                        className="p-2"   accept="image/png, image/jpeg"
                     />
 
                     <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">

@@ -71,7 +71,7 @@ if (insertError) throw insertError
 }
 
   return (
-     <div className=' min-h-screen flex flex-col items-center justify-center text-blue-600'> 
+     <div className=' min-h-screen flex flex-col items-center justify-center text-blue-600 bg-red-950'> 
      
       <Card className="w-full max-w-sm bg-red-900 shadow-xl">
       <CardHeader>

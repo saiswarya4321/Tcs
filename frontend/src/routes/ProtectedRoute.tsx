@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }: Props) => {
   if (loading) return <p>Loading...</p>
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
 
   return <>{children}</>
