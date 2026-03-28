@@ -22,20 +22,20 @@ export default function UpdateProfileModal({
     const [formData, setFormData] = useState({
         name: "",
         phone_number: "",
-        location:"",
-        avatars_url:"",
+        location: "",
+        avatars_url: "",
     })
-
+const [errors, setErrors] = useState<any>({})
     const [avatar, setAvatar] = useState<File | null>(null)
-    const [loading,setLoading]=useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (profile) {
             setFormData({
                 name: profile.name || "",
                 phone_number: profile.phone_number || "",
-                   location: profile.location || "",
-                   avatars_url:profile.avatars_url || ""
+                location: profile.location || "",
+                avatars_url: profile.avatars_url || ""
             })
         }
     }, [profile])
@@ -43,19 +43,46 @@ export default function UpdateProfileModal({
     const handleChange = (e: any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
+const validate = () => {
+  let newErrors: any = {}
 
+  if (!formData.name || formData.name.trim() === "") {
+    newErrors.name = "Name is required"
+  }
+if (!formData.phone_number || formData.phone_number.trim() === "") {
+    newErrors.phone_number = "Phone number is required"
+  }
+  else{
+    if(formData.phone_number && !/^[0-9]{10}$/.test(formData.phone_number)) {
+    newErrors.phone_number = "Phone must be 10 digits"
+  }
+  } 
+  if (!formData.location || formData.location.trim() === "") {
+    newErrors.location = "Location is required"
+  }
+
+
+  if (formData.avatars_url && !/^https?:\/\/.+/.test(formData.avatars_url)) {
+    newErrors.avatars_url = "Invalid URL"
+  }
+
+  setErrors(newErrors)
+
+  return Object.keys(newErrors).length === 0
+}
     const handleUpdate = async () => {
         try {
+            if (!validate()) return
             let avatar_url = profile.avatars_url
 
 
             if (avatar) {
                 const allowedTypes = ["image/png", "image/jpeg"]
 
-  if (!allowedTypes.includes(avatar.type)) {
-    toast.error("Only PNG and JPEG images are allowed")
-    return
-  }
+                if (!allowedTypes.includes(avatar.type)) {
+                    toast.error("Only PNG and JPEG images are allowed")
+                    return
+                }
                 const filePath = `avatars/${profile.id}/${avatar.name}`
 
                 const { error: uploadError } = await supabase.storage
@@ -77,8 +104,8 @@ export default function UpdateProfileModal({
                 .update({
                     name: formData.name,
                     phone_number: formData.phone_number,
-                    location:formData.location,
-                    avatars_url:avatar_url,
+                    location: formData.location,
+                    avatars_url: avatar_url,
                 })
                 .eq("id", profile.id)
 
@@ -91,15 +118,15 @@ export default function UpdateProfileModal({
         } catch (err: any) {
             toast.error(err.message)
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
 
     if (!open) return null
     if (loading) {
-    return <p className="text-center mt-10 text-gray-300">Loading...</p>
-  }
+        return <p className="text-center mt-10 text-gray-300">Loading...</p>
+    }
 
 
     return (
@@ -110,21 +137,21 @@ export default function UpdateProfileModal({
                 <h2 className="text-white text-lg font-bold mb-4">
                     Update Profile
                 </h2>
-
+                {loading && <p className="text-center m-4 text-gray-300">Loading...</p>}
                 <div className="flex flex-col gap-4">
-                    
-         <div className='p-6'><img
-  src={
-    profile?.avatars_url && profile.avatars_url !== ""
-      ? profile.avatars_url
-      : profileImg
-  }
-  onError={(e) => {
-    (e.target as HTMLImageElement).src = profileImg
-  }}
-  alt="profile"  className="w-[300px] h-[300px] rounded-full"
-/></div>
-               
+
+                    <div className='p-6'><img
+                        src={
+                            profile?.avatars_url && profile.avatars_url !== ""
+                                ? profile.avatars_url
+                                : profileImg
+                        }
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).src = profileImg
+                        }}
+                        alt="profile" className="w-[300px] h-[300px] rounded-full"
+                    /></div>
+
 
 
                     <Label>Name</Label>
@@ -134,7 +161,7 @@ export default function UpdateProfileModal({
                         onChange={handleChange}
                         className="p-2 rounded border text-gray-300"
                     />
-
+{errors.name && <p className="text-red-500">{errors.name}</p>}
                     <Label>Phone</Label>
                     <input
                         name="phone_number"
@@ -142,6 +169,7 @@ export default function UpdateProfileModal({
                         onChange={handleChange}
                         className="p-2 rounded border text-gray-300" type="tel"
                     />
+                    {errors.phone_number && <p className="text-red-500">{errors.phone_number}</p>}
                     <Label>Location</Label>
                     <input
                         name="location"
@@ -149,14 +177,14 @@ export default function UpdateProfileModal({
                         onChange={handleChange}
                         className="p-2 rounded border text-gray-300"
                     />
-
+{errors.location && <p className="text-red-500">{errors.location}</p>}
                     <Label>Profile Image</Label>
                     <input
                         type="file"
                         onChange={(e) => setAvatar(e.target.files?.[0] || null)}
-                        className="p-2"   accept="image/png, image/jpeg"
+                        className="p-2" accept="image/png, image/jpeg"
                     />
-
+{errors.avatars_url && <p className="text-red-500">{errors.avatars_url}</p>}
                     <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
 
                         <Button

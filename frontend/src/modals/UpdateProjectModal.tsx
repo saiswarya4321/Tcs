@@ -17,7 +17,7 @@ export default function UpdateProjectModal({
     start_date: "",
     end_date: "",
   })
-
+const [errors, setErrors] = useState<{ [key: string]: string }>({})
   useEffect(() => {
     if (project) {
       setFormData({
@@ -34,8 +34,45 @@ export default function UpdateProjectModal({
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const validate = () => {
+        const newErrors: { [key: string]: string } = {}
+
+        if (!formData.project_code.trim()) {
+            newErrors.project_code = "Project code is required"
+        }
+
+        if (!formData.name.trim()) {
+            newErrors.name = "Project name is required"
+        }
+
+        if (!formData.description.trim()) {
+            newErrors.description = "Description is required"
+        }
+
+        if (!formData.start_date) {
+            newErrors.start_date = "Start date is required"
+        }
+
+        if (!formData.end_date) {
+            newErrors.end_date = "End date is required"
+        }
+
+        // Date validation
+        if (formData.start_date && formData.end_date) {
+            if (formData.end_date < formData.start_date) {
+                newErrors.end_date = "End date cannot be before start date"
+            }
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+
+
   const handleUpdateProject = async () => {
     try {
+       if (!validate()) return
       if (!project) return
 
       if (formData.end_date < formData.start_date) {
@@ -68,19 +105,24 @@ export default function UpdateProjectModal({
 
         <div className="flex flex-col gap-4 bg-red-900">
           <Label>Project Code</Label>
-          <input name="project_code" value={formData.project_code} onChange={handleChange} className="p-2 rounded text-gray-300" />
+          <input name="project_code" value={formData.project_code} onChange={handleChange} className="p-2 rounded text-gray-300 border border-red-300 focus:outline-none" />
+           {errors.project_code && <p className="text-red-400 text-sm">{errors.project_code}</p>}
 
           <Label>Name</Label>
-          <input name="name" value={formData.name} onChange={handleChange} className="p-2 rounded text-gray-300" />
+          <input name="name" value={formData.name} onChange={handleChange} className="p-2 rounded text-gray-300 border border-red-300 focus:outline-none" />
+           {errors.name && <p className="text-red-400 text-sm">{errors.name}</p>}
 
           <Label>Description</Label>
-          <input name="description" value={formData.description} onChange={handleChange} className="p-2 rounded text-gray-300" />
+          <input name="description" value={formData.description} onChange={handleChange} className="p-2 rounded text-gray-300 border border-red-300 focus:outline-none" />
+           {errors.description && <p className="text-red-400 text-sm">{errors.description}</p>}
 
           <Label>Start Date</Label>
-          <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} className="p-2 rounded text-gray-300" />
+          <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} className="p-2 rounded text-gray-300 border border-red-300 focus:outline-none" />
+           {errors.start_date && <p className="text-red-400 text-sm">{errors.start_date}</p>}
 
           <Label>End Date</Label>
-          <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} className="p-2 rounded text-gray-300" />
+          <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} className="p-2 rounded text-gray-300 border border-red-300 focus:outline-none" />
+           {errors.end_date && <p className="text-red-400 text-sm">{errors.end_date}</p>}
 
           <div className="flex gap-2 mt-4">
             <Button onClick={handleUpdateProject} className="bg-white text-red-900">
