@@ -1,5 +1,5 @@
 import { Home, User,  LogOut, Menu, Tags,MessageCircle,FileAxis3D} from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/supabase-client"
@@ -12,6 +12,8 @@ export default function Sidebar() {
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
+    const [profile,setProfile]=useState<any>("")
+    const [loading,setLoading]=useState(false)
      const handleLogout = async () => {
   try {
     const { error } = await supabase.auth.signOut()
@@ -26,6 +28,32 @@ export default function Sidebar() {
     console.error("Logout error:", err.message)
   }
 }
+useEffect(()=>{
+getUser()
+},[])
+
+const getUser=async()=>{
+    try {
+      setLoading(true)
+      const{error,data}=await supabase.auth.getUser()
+      if(error) throw error
+      const userData=data.user
+      //setUser(userData)
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("id", userData.id)
+        .single()
+
+      if (profileError) throw profileError
+      setProfile(profileData)
+    } catch (error:any) {
+      console.log(error.message)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
 
     return (
         <>
@@ -41,7 +69,10 @@ export default function Sidebar() {
                     } md:translate-x-0 transition-transform duration-300 z-50`}
             >
                <div className="m-2 p-2 bg-red-950 rounded-xl shadow-xl text-center">Team Collaboration System</div>
+               {loading && <p >Loading......</p>}
+              <p className="text-sm text-gray-300 md:ml-4 p-2"><span className="text-gray-400 mr-1">Logged In</span> {profile?.name}</p>
                 <nav className="flex flex-col gap-2 p-4 md:gap-4">
+                     
                     <SidebarItem icon={<Home size={18} />} label="Home" onClick={() => navigate("/dashboard")} active={location.pathname === "/dashboard"} />
                     <SidebarItem icon={<User size={18} />} label="Profile" onClick={() =>navigate("/profile")} active={location.pathname === "/profile"}/>
                     <SidebarItem icon={<Tags size={18} />} label="Tasks" onClick={() =>navigate("/task")} active={location.pathname === "/task"}/>
