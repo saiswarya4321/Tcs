@@ -5,7 +5,7 @@ import { supabase } from '@/supabase-client'
 
 function Dashboard() {
 
-  const[user,setUser]=useState<any>("")
+  
   const[loading,setLoading]=useState(false)
   const [profile, setProfile] = useState<{ name: string } | null>(null)
   useEffect(()=>{
@@ -18,7 +18,7 @@ getUser()
       const{error,data}=await supabase.auth.getUser()
       if(error) throw error
       const userData=data.user
-      setUser(userData)
+     
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("name")
